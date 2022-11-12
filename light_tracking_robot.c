@@ -1,85 +1,72 @@
-/*Arduino Light Tracking Robot 
- *Version 1.0
- *Before Uploading the sketch you must install the required libraries first. 
- *Unless you'll get compilation error message.
- *Also remove the yellow jumper cap from motor driver before uploading the sketch/
+// declaration of the motors that will be used 
+ #define Motor11 7
+ #define Motor12 6
+ #define Motor21 9
+ #define Motor22 8
+ #define PWMmotor1 5
+ #define PWMmotor2 10
 
-
-
-
-#include<AFMotor.h> 
-#define L1 A0 
-#define M1 A1
-#define R1 A2
-
-AF_DCMotor motor1(1);
-AF_DCMotor motor2(2);
-AF_DCMotor motor3(3);
-AF_DCMotor motor4(4);
-
-
+ int valuePWM1=120; // speed motor 1 
+ int valuePWM2=150; // speed motor 2
+ 
 void setup() {
-  // put your setup code here, to run once:
-Serial.begin(9600);
-pinMode(L1, INPUT);
-pinMode(M1, INPUT);
-pinMode(R1, INPUT);
+  // declaration of the hardware pins that will be used for the motors
+  pinMode(Motor11,OUTPUT);
+  pinMode(Motor12,OUTPUT);
+  pinMode(Motor21,OUTPUT);
+  pinMode(Motor22,OUTPUT);
+  pinMode(PWMmotor1,OUTPUT);
+  pinMode(PWMmotor2,OUTPUT);
+
+pinMode(A0, INPUT); // initialize Right sensor as an inut
+pinMode(A1, INPUT); // initialize Left sensor as as input
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-int LSensor = digitalRead(L1);
-int MSensor = digitalRead(M1);
-int RSensor = digitalRead(R1);
+  // definition of the IR sensors to the hardware pins
+  int LEFT_SENSOR = analogRead(A0);
+  int RIGHT_SENSOR = analogRead(A1);
 
-Serial.print("LSensor");
-Serial.println(LSensor);
-Serial.print("MSensor");
-Serial.println(MSensor);
-Serial.print("RSensor");
-Serial.println(RSensor);
-
-if((LSensor == 0)&&(MSensor == 0)&&(RSensor ==0)) { 
-  //MOVE FORWARD
-  motor1.setSpeed(120);
-  motor1.run(FORWARD);
-  motor2.setSpeed(120);
-  motor2.run(FORWARD);
-  motor3.setSpeed(120);
-  motor3.run(FORWARD);
-  motor4.setSpeed(120);
-  motor4.run(FORWARD);
+// the next section of "if else" statements 
+//will define the movement of the bot according to the values of the sensors.
   
-} else if((LSensor == 0)&&(MSensor == 0)&&(RSensor ==1)) {
-  //TURN LEFT
-  motor1.setSpeed(150);
-  motor1.run(BACKWARD);
-  motor2.setSpeed(150);
-  motor2.run(BACKWARD);
-  motor3.setSpeed(150);
-  motor3.run(FORWARD);
-  motor4.setSpeed(150);
-  motor4.run(FORWARD);
-  
-}else if((LSensor == 1)&&(MSensor == 0)&&(RSensor ==0)) {
-  //TURN RIGHT
-  motor1.setSpeed(150);
-  motor1.run(FORWARD);
-  motor2.setSpeed(150);
-  motor2.run(FORWARD);
-  motor3.setSpeed(150);
-  motor3.run(BACKWARD);
-  motor4.setSpeed(150);
-  motor4.run(BACKWARD);
-}else if((LSensor == 1)&&(MSensor == 1)&&(RSensor ==1)) {
-  //STOP
-  motor1.setSpeed(0);
-  motor1.run(RELEASE);
-  motor2.setSpeed(0);
-  motor2.run(RELEASE);
-  motor3.setSpeed(0);
-  motor3.run(RELEASE);
-  motor4.setSpeed(0);
-  motor4.run(RELEASE);
+if(RIGHT_SENSOR<36 && LEFT_SENSOR<36) //FORWARD
+{
+            digitalWrite(Motor11, HIGH);
+            digitalWrite(Motor12, LOW);
+            digitalWrite(Motor21, HIGH);
+            digitalWrite(Motor22, LOW);
+            analogWrite(PWMmotor1, valuePWM1);
+            analogWrite(PWMmotor2, valuePWM1);
 }
+
+ else if(RIGHT_SENSOR>36 && LEFT_SENSOR<36) //LEFT
+ {
+            digitalWrite(Motor11, LOW);
+            digitalWrite(Motor12, HIGH);
+            digitalWrite(Motor21, HIGH);
+            digitalWrite(Motor22, LOW);
+            analogWrite(PWMmotor1, valuePWM2);
+            analogWrite(PWMmotor2, valuePWM2);
+}
+
+else if(RIGHT_SENSOR<36 && LEFT_SENSOR>35) //RIGHT
+ {
+              digitalWrite(Motor11, HIGH);
+              digitalWrite(Motor12, LOW);
+              digitalWrite(Motor21, LOW);
+              digitalWrite(Motor22, HIGH);
+              analogWrite(PWMmotor1, valuePWM2);
+              analogWrite(PWMmotor2, valuePWM2);
+}
+
+else if(RIGHT_SENSOR>35 && LEFT_SENSOR>35) //BACK
+{
+              digitalWrite(Motor11, LOW);
+              digitalWrite(Motor12, LOW);
+              digitalWrite(Motor21, LOW);
+              digitalWrite(Motor22, LOW);
+              delay(10000);
+ }
 }
